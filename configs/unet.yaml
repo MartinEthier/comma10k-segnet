@@ -1,0 +1,24 @@
+# Training
+epochs: 150
+checkpoint_dir: /home/martin/datasets/comma10k/checkpoints
+
+# Dataset
+root: /home/martin/datasets/comma10k
+downscale_factor: 2
+
+# Model
+encoder: efficientnet-b3
+model: Unet
+min_factor: 32
+
+# Loaders
+train_batch_size: 4
+train_num_workers: 12
+val_batch_size: 4
+val_num_workers: 12
+
+# Optimizer
+opt_name: Adam
+scheduler: plateau
+lr: 0.001
+weight_decay: 0.001

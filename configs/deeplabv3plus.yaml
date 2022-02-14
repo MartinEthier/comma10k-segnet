@@ -1,0 +1,24 @@
+# Training
+epochs: 75
+checkpoint_dir: /home/martin/datasets/comma10k/checkpoints
+
+# Dataset
+root: /home/martin/datasets/comma10k
+downscale_factor: 2
+
+# Model
+encoder: efficientnet-b3
+model: DeepLabV3Plus
+min_factor: 16
+
+# Loaders
+train_batch_size: 4
+train_num_workers: 6
+val_batch_size: 4
+val_num_workers: 6
+
+# Optimizer
+opt_name: SGD
+lr: 0.007
+weight_decay: 0.0002
+scheduler: poly
