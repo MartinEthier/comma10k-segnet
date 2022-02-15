@@ -10,6 +10,7 @@ downscale_factor: 2
 encoder: efficientnet-b3
 model: Unet
 min_factor: 32
+norm: instance
 
 # Loaders
 train_batch_size: 4

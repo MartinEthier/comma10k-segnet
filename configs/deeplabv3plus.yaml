@@ -11,6 +11,7 @@ downscale_factor: 2
 encoder: efficientnet-b3
 model: DeepLabV3Plus
 min_factor: 16
+norm: batch
 
 # Loaders
 train_batch_size: 4

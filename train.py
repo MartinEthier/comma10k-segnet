@@ -1,3 +1,4 @@
+from ctypes import util
 import yaml
 from pathlib import Path
 import argparse
@@ -86,15 +87,22 @@ def main(cfg):
     # Init model
     model = getattr(smp, cfg["model"])(encoder_name=cfg["encoder"], classes=len(CMAP))
 
-    # Replace all batch norm with instance norm since we are using very small batch sizes
-    #utils.batchnorm_to_instancenorm(model)
+    # Load checkpoint if given
+    if cfg["load_checkpoint"]:
+        model.load_state_dict(torch.load(cfg["load_checkpoint"]))
+    else:
+        # Replace all batch norms to help deal with small batch sizes
+        # Only replace if starting training from scratch, else keep loaded norm
+        if cfg["norm"] == "instance":
+            utils.batchnorm_to_instancenorm(model)
+        elif cfg["norm"] == "group":
+            utils.batchnorm_to_groupnorm(model)
 
     model.to(device)
 
     # Init loss and optimizer
     ce_loss = torch.nn.CrossEntropyLoss()
     focal_loss = smp.losses.FocalLoss('multiclass')
-    #dice_loss = smp.losses.DiceLoss('multiclass', classes=len(CMAP), log_loss=True)
 
     if cfg["opt_name"] == "SGD":
         optimizer = torch.optim.SGD(model.parameters(), lr=cfg["lr"], weight_decay=cfg["weight_decay"], momentum=0.9)
