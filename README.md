@@ -10,3 +10,6 @@ The only things needed are the imgs and masks folders and the files_trainable fi
 
 ## Training Setup
 
+
+## Mask Alpha Channel Issue?
+I ended up wasting a ton of time because some of the masks in the dataset have alpha channels, and some don't... I was loading in the masks as numpy arrays and matching the colors to the provided class color list, but not removing the alpha channel because I didn't know about it (most PNGs don't have an alpha channels). This ended up causing the final masks to just be "road" for all the PNGs that have alpha channels and was causing me to have abnormally high cross-entropy loss values.

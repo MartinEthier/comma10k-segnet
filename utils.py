@@ -26,8 +26,9 @@ def batchnorm_to_groupnorm(module: torch.nn.Module, num_groups=1):
         else:
             batchnorm_to_groupnorm(child)
 
-def img_display(img_np):
+def img_display(tensor):
     # Normalize to 0-255 and convert to uint8 for display purposes
+    img_np = tensor.cpu().detach().numpy()
     img_np = np.transpose(img_np, (1, 2, 0))
     img_np -= np.min(img_np)
     img_np *= 255.0 / np.max(img_np)

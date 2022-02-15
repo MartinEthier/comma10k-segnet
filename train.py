@@ -12,21 +12,12 @@ from albumentations.pytorch import ToTensorV2
 from tqdm import tqdm
 import segmentation_models_pytorch as smp
 from sklearn.metrics import confusion_matrix
-import torchvision
-import cv2
 
 from dataset import Comma10kDataset
 from constants import CMAP, MOVEABLE_IDX
 import utils
 from schedulers import PolynomialLRDecay
 
-
-### TO-DO
-# Log mIoU metric + IoU per class
-# Switch to focal loss or dice + focal
-# Add early stopping on val loss
-# More augmentation
-# Fine-tune with full images
 
 # Set random seeds
 torch.manual_seed(0)

@@ -1,6 +1,7 @@
 # Training
 epochs: 75
 checkpoint_dir: /home/martin/datasets/comma10k/checkpoints
+load_checkpoint: null
 
 # Dataset
 root: /home/martin/datasets/comma10k
