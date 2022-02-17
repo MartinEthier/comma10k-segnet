@@ -53,14 +53,14 @@ def main(cfg):
     train_transforms = A.Compose([
         A.Resize(height, width),
         A.HorizontalFlip(p=0.5),
-        A.GaussNoise(var_limit=50.0, p=0.4),
+        A.GaussNoise(var_limit=50.0, p=0.5),
         A.ColorJitter(brightness=0.6, contrast=0.5, saturation=0.6, hue=0.05, p=0.5),
         A.OneOf([
             A.MotionBlur(blur_limit=(3, 13), p=1.0),
             A.Sharpen(alpha=(0.2, 0.6), lightness=(0.5, 0.9), p=1.0),
-        ], p=0.4),
-        A.CLAHE(p=0.3),
-        A.ISONoise(p=0.3),
+        ], p=0.5),
+        A.CLAHE(p=0.4),
+        A.ISONoise(p=0.4),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ToTensorV2()
     ])
@@ -111,7 +111,9 @@ def main(cfg):
 
     if cfg["scheduler"] == "poly":
         # Use poly lr scheduler as suggested in DeepLabV3 paper
-        scheduler = PolynomialLRDecay(optimizer, len(train_loader) * cfg["epochs"], end_learning_rate=cfg["lr"]/100, power=0.9)
+        scheduler = PolynomialLRDecay(optimizer, len(train_loader)*cfg["epochs"], end_learning_rate=cfg["lr"]/100, power=0.9)
+    elif cfg["scheduler"] == "cos":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, len(train_loader)*cfg["epochs"], eta_min=cfg["lr"]/100)
     elif cfg["scheduler"] == "plateau":
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.1, patience=10)
 
@@ -163,12 +165,12 @@ def main(cfg):
             # Updates the scale for next iteration.
             scaler.update()
             
-            if cfg["scheduler"] == "poly":
+            if cfg["scheduler"] == "poly" or cfg["scheduler"] == "cos":
                 scheduler.step()
 
             # Grab last examples in epoch for logging
             if idx == len(train_loader) - 1:
-                log_dict["train"]["img"] = utils.img_display(inputs[0].cpu().detach().numpy())
+                log_dict["train"]["img"] = utils.img_display(inputs[0])
                 log_dict["train"]["mask"] = labels[0].cpu().detach().numpy()
                 log_dict["train"]["pred"] = torch.argmax(output[0], axis=0).cpu().detach().numpy()
 
@@ -198,7 +200,7 @@ def main(cfg):
 
                 # Grab last examples in epoch for logging
                 if idx == len(val_loader) - 1:
-                    log_dict["val"]["img"] = utils.img_display(inputs[0].cpu().detach().numpy())
+                    log_dict["val"]["img"] = utils.img_display(inputs[0])
                     log_dict["val"]["mask"] = labels[0].cpu().detach().numpy()
                     log_dict["val"]["pred"] = torch.argmax(output[0], axis=0).cpu().detach().numpy()
 
@@ -236,7 +238,7 @@ def main(cfg):
             wandb.run.summary["best_iou"] = best_iou
             torch.save(model.state_dict(), checkpoint_dir / f"{run.name}_best_model.pt")
 
-        current_lr = optimizer.param_groups[0]['lr'] if cfg["scheduler"] == "plateau" else scheduler.get_lr()[0]
+        current_lr = optimizer.param_groups[0]['lr'] if cfg["scheduler"] == "plateau" else scheduler.get_last_lr()[0]
         wandb.log({
             'train_ce_loss': log_dict["train"]["ce"] / len(train_loader),
             'train_focal_loss': log_dict["train"]["focal"] / len(train_loader),

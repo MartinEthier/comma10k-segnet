@@ -21,7 +21,7 @@ class PolynomialLRDecay(_LRScheduler):
         self.last_step = 0
         super().__init__(optimizer)
         
-    def get_lr(self):
+    def get_last_lr(self):
         if self.last_step > self.max_decay_steps:
             return [self.end_learning_rate for _ in self.base_lrs]
 
