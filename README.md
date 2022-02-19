@@ -13,3 +13,6 @@ The config for my best run is deeplabv3plus.yaml. So to run this, just do:
 ```
 python train.py configs/deeplabv3plus.yaml
 ```
+
+## Best Model
+My current best model achieves a cross-entropy loss of 0.068 with a validation mIoU of 0.857. Note that this model is trained on half-size images since I am limited on compute (single 8GB GPU). The config file used for this run is the deeplabv3plus.yaml file in the repo.
