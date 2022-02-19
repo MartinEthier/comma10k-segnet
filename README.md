@@ -15,4 +15,11 @@ python train.py configs/deeplabv3plus.yaml
 ```
 
 ## Best Model
-My current best model achieves a cross-entropy loss of 0.068 with a validation mIoU of 0.857. Note that this model is trained on half-size images since I am limited on compute (single 8GB GPU). The config file used for this run is the deeplabv3plus.yaml file in the repo.
+My current best model achieves a cross-entropy loss of 0.068 with a validation mIoU of 0.857. Note that this model is trained on half-size images since I am limited on compute (single 8GB GPU). The config file used for this run is the deeplabv3plus.yaml file in the repo. Example predictions on the validation set are shown below:
+![preds](images/val_preds.png)
+
+Some training plots:
+![train_ce](images/train_ce.png)
+![val_ce](images/val_ce.png)
+![train_miou](images/train_miou.png)
+![val_miou](images/val_miou.png)
